@@ -22,11 +22,24 @@
             color: #ffffff;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
@@ -87,17 +100,17 @@
         }
 
         .weapon-card {
-            background: linear-gradient(135deg, rgb(105, 105, 105), rgba(123, 123, 123, 0.05));
             border: 1px solid rgba(255, 70, 86, 0.3);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.6s ease;
             backdrop-filter: blur(12px);
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 20px rgba(255, 70, 86, 0.05);
-
+            background-size: 200% 200%;
+            background-position: 0% 0%;
         }
 
         .weapon-card::before {
@@ -119,8 +132,10 @@
         .weapon-card:hover {
             transform: translateY(-6px);
             border-color: #ff4656;
-            box-shadow: 0 0 30px rgba(255, 70, 86, 0.3);
-
+            box-shadow: 0 0 20px rgba(255, 70, 86, 0.3);
+            background: linear-gradient(135deg, #ff4656 0%, #1b1a1a 50%, #232b36 100%);
+            background-size: 200% 200%;
+            background-position: 100% 100%;
         }
 
         .weapon-image {
@@ -359,7 +374,7 @@
 </head>
 
 <body>
-
+    <canvas id="stars-canvas"></canvas>
 
     <div class="container">
         <h1>VALORANT WEAPONS</h1>
@@ -570,11 +585,6 @@
             });
         }
 
-
-
-
-
-
         // Modal functionality
         function setupModal() {
             const modal = document.getElementById('weaponModal');
@@ -597,6 +607,83 @@
                 }
             });
         }
+
+        // Starfield animation
+        (function() {
+            const canvas = document.getElementById('stars-canvas');
+            const ctx = canvas.getContext('2d');
+            let stars = [];
+            const STAR_COUNT = 80;
+            const STAR_COLOR = 'rgba(255,255,255,0.85)';
+            const STAR_MIN_RADIUS = 0.5;
+            const STAR_MAX_RADIUS = 1.8;
+            const STAR_SPEED = 0.08;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            function createStars() {
+                stars = [];
+                for (let i = 0; i < STAR_COUNT; i++) {
+                    stars.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        r: STAR_MIN_RADIUS + Math.random() * (STAR_MAX_RADIUS - STAR_MIN_RADIUS),
+                        speed: STAR_SPEED + Math.random() * 0.07,
+                        dx: (Math.random() - 0.5) * 0.1,
+                        dy: Math.random() * 0.2 + 0.05
+                    });
+                }
+            }
+
+            function drawStars() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let star of stars) {
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+                    ctx.fillStyle = STAR_COLOR;
+                    ctx.shadowColor = "#fff";
+                    ctx.shadowBlur = 6;
+                    ctx.fill();
+                }
+            }
+
+            function updateStars() {
+                for (let star of stars) {
+                    star.x += star.dx;
+                    star.y += star.dy * star.speed;
+                    if (star.y > canvas.height) {
+                        star.x = Math.random() * canvas.width;
+                        star.y = -2;
+                    }
+                    if (star.x < 0) star.x = canvas.width;
+                    if (star.x > canvas.width) star.x = 0;
+                }
+            }
+
+            function animate() {
+                drawStars();
+                updateStars();
+                requestAnimationFrame(animate);
+            }
+
+            function initStars() {
+                resizeCanvas();
+                createStars();
+            }
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                createStars();
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                initStars();
+                animate();
+            });
+        })();
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
