@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valorant Agents</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <style>
+        * {
+
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #ebebeb;
+            color: #1e293b;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        .controls {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+        }
+
+        .search-box {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #111;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 300px;
+            box-shadow:
+                10px 10px 20px #bebebee9,
+                -10px -10px 15px #ffffff;
+        }
+
+        .search-box::placeholder {
+            color: #888;
+        }
+
+        .search-box:hover::placeholder,
+        .search-box:active::placeholder {
+            color: #fff;
+        }
+
+        .role-filter {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .role-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 20px;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            box-shadow:
+                10px 10px 15px #bebebe,
+                -10px -10px 15px #ffffff;
+        }
+
+        .role-btn:hover,
+        .role-btn.active,
+        .search-box:hover,
+        .search-box:focus {
+            background: #3b82f6;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 35px;
+            margin-bottom: 40px;
+        }
+
+        .agent-card {
+            background: rgba(246, 246, 245, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(15px);
+            border: 0.5px solid #ebebeb7c;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                10px 10px 15px #bebebee9,
+                -10px -10px 15px #ffffff;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .agent-card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .agent-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            transition: all 0.4s ease;
+            filter: brightness(0.95) drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
+        }
+
+        .agent-card:hover .agent-image {
+            transform: scale(1.1);
+            filter: brightness(1.2) drop-shadow(0px 0px 25px rgba(255, 255, 255, 1));
+        }
+
+        .agents-grid:has(:hover) .agent-card:not(:hover) {
+            filter: blur(2px);
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
+
+        .agent-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .agent-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1e293b;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .agent-role {
+            color: #3b82f6;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .view-details-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #3b82f6, #6366f1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view-details-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: #eeeeeeee;
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #3e3a3a1f;
+            position: relative;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 20px;
+        }
+
+        .modal-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 20px;
+            object-fit: cover;
+            box-shadow: 10px 10px 10px #bebebe,
+                -10px -10px 10px #ffffffff;
+        }
+
+        .modal-title {
+            font-size: 2.4rem;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .modal-role {
+            color: #3b82f6;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .modal-description {
+            color: #777;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #eeeeeeee;
+            border-radius: 15px;
+            box-shadow:
+                10px 10px 20px #bebebe,
+                -10px -10px 15px #fff;
+        }
+
+        .modal-description:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                5px 5px 10px #bebebe,
+                -5px -5px 10px #fff;
+        }
+
+        .abilities-section {
+            margin-top: 25px;
+        }
+
+        .abilities-title {
+            font-size: 1.6rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .abilities-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .ability-card {
+            padding: 20px;
+            border: 1px solid #bebebe89;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: #eeeeeeee;
+            border-radius: 15px;
+            box-shadow:
+                10px 10px 20px #bebebe,
+                -10px -10px 15px #fff;
+        }
+
+        .ability-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                5px 5px 10px #bebebe,
+                -5px -5px 10px #fff;
+        }
+
+        .abilities-grid:has(:hover) .ability-card:not(:hover) {
+            filter: blur(1px);
+            transform: scale(0.95);
+            opacity: 0.7;
+        }
+
+        .ability-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 15px;
+        }
+
+        .ability-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #888;
+
+        }
+
+        .ability-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .ability-description {
+            color: #64748b;
+            line-height: 1.2;
+            font-size: 1.2rem;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #777;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Home Button Styles */
+        .home-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s ease;
+            box-shadow:
+                8px 8px 16px rgba(59, 130, 246, 0.3),
+                -8px -8px 16px rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .home-btn a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .home-btn i {
+            color: white;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow:
+                12px 12px 24px rgba(59, 130, 246, 0.4),
+                -12px -12px 24px rgba(255, 255, 255, 0.8);
+        }
+
+        .home-btn:active {
+            transform: translateY(-1px) scale(1.05);
+        }
+
+
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .search-box {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                padding: 20px;
+            }
+
+            .modal-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .modal-title {
+                font-size: 2rem;
+            }
+
+            .home-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+                letter-spacing: 2px;
+            }
+
+            .agent-image {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Valorant Agents</h1>
+            <p>Choose your fighter</p>
+        </div>
+
+        <div class="controls">
+            <input type="text" class="search-box" placeholder="Search agents..." id="searchBox">
+            <div class="role-filter" id="roleFilter"></div>
+        </div>
+        <div class="agents-grid" id="agentsGrid"></div>
+        <div class="no-results" id="noResults" style="display: none;">No agents found matching your criteria.</div>
+    </div>
+
+    <button class="home-btn">
+        <a href="../index.html">
+            <i class="fas fa-home"></i>
+        </a>
+    </button>
+
+    <div id="agentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <img id="modalImage" class="modal-image" src="" alt="">
+                <div>
+                    <h2 id="modalTitle" class="modal-title"></h2>
+                    <p id="modalRole" class="modal-role"></p>
+                </div>
+            </div>
+            <p id="modalDescription" class="modal-description"></p>
+            <div class="abilities-section">
+                <h3 class="abilities-title">Abilities</h3>
+                <div id="abilitiesGrid" class="abilities-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let agents = [];
+        let filteredAgents = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        function fetchAgents() {
+            fetch('https://valorant-api.com/v1/agents')
+                .then(res => res.json())
+                .then(data => {
+                    agents = data.data.filter(agent => agent.isPlayableCharacter);
+                    filteredAgents = [...agents];
+
+                    createRoleFilter();
+                    renderAgents();
+                });
+        }
+
+        function createRoleFilter() {
+            const roleFilterContainer = document.getElementById('roleFilter');
+            let rolesList = agents.map(agent => agent.role?.displayName).filter(Boolean);
+            const roles = ['all', ...new Set(rolesList)];
+            roleFilterContainer.innerHTML = '';
+            roles.forEach(role => {
+                const button = document.createElement('button');
+                button.className = 'role-btn';
+                button.textContent = role;
+                button.onclick = function () {
+                    filterByRole(role);
+                };
+                if (role === 'all') {
+                    button.classList.add('active');
+                }
+                roleFilterContainer.appendChild(button);
+            });
+        }
+
+        function filterByRole(role) {
+            currentFilter = role;
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === role);
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            filteredAgents = agents.filter(agent => {
+                const matchRole = currentFilter === 'all' || agent.role?.displayName === currentFilter;
+                const matchSearch = currentSearch === '' ||
+                    agent.displayName.toLowerCase().includes(currentSearch.toLowerCase());
+                return matchRole && matchSearch;
+            });
+
+            renderAgents();
+        }
+
+        function renderAgents() {
+            const agentsGrid = document.getElementById('agentsGrid');
+            const noResults = document.getElementById('noResults');
+            agentsGrid.innerHTML = '';
+
+            if (filteredAgents.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+
+            filteredAgents.forEach((agent, index) => {
+                const card = document.createElement('div');
+                card.className = 'agent-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                card.innerHTML = `
+          <div class="agent-card-content">
+            <img src="${agent.fullPortraitV2}" alt="${agent.displayName}" class="agent-image">
+            <div class="agent-info">
+              <h3 class="agent-name">${agent.displayName}</h3>
+              <p class="agent-role">${agent.role?.displayName || 'Unknown'}</p>
+            </div>
+            <button class="view-details-btn" onclick="openModal('${agent.uuid}')">
+              View Details
+            </button>
+          </div>
+        `;
+                agentsGrid.appendChild(card);
+            });
+        }
+
+        function openModal(agentId) {
+            const agent = agents.find(a => a.uuid === agentId);
+            if (!agent) return;
+
+            document.getElementById('modalImage').src = agent.displayIcon;
+            document.getElementById('modalTitle').textContent = agent.displayName;
+            document.getElementById('modalRole').textContent = agent.role?.displayName || 'Unknown';
+            document.getElementById('modalDescription').textContent = agent.description;
+
+            const abilitiesGrid = document.getElementById('abilitiesGrid');
+            abilitiesGrid.innerHTML = '';
+
+            if (agent.abilities?.length > 0) {
+                agent.abilities.forEach(ability => {
+                    const abilityCard = document.createElement('div');
+                    abilityCard.className = 'ability-card';
+                    abilityCard.innerHTML = `
+            <div class="ability-header">
+              <img src="${ability.displayIcon}" alt="${ability.displayName}" class="ability-icon">
+              <h4 class="ability-name">${ability.displayName}</h4>
+            </div>
+            <p class="ability-description">${ability.description}</p>
+          `;
+                    abilitiesGrid.appendChild(abilityCard);
+                });
+            } else {
+                abilitiesGrid.innerHTML = '<p style="text-align: center; color: #a0a5b8;">No abilities available</p>';
+            }
+
+            document.getElementById('agentModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('agentModal').style.display = 'none';
+        }
+
+        const searchBox = document.getElementById('searchBox');
+        searchBox.addEventListener('input', e => {
+            currentSearch = e.target.value;
+            applyFilters();
+        });
+
+        window.onclick = e => {
+            const modal = document.getElementById('agentModal');
+            if (e.target === modal) closeModal();
+        };
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        fetchAgents();
+    </script>
+</body>
+
+</html>
